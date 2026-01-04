@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>APPLE</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Lilita+One&display=swap" rel="stylesheet">
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+  <canvas id="snowCanvas" aria-hidden="true"></canvas>
+
+  <button class="about-btn" id="aboutBtn" data-href="about.html" aria-label="About me" title="About">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" style="display:block">
+      <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" fill="currentColor" opacity="0.95"/>
+      <path d="M3 20c0-3.3 4.5-5 9-5s9 1.7 9 5v1H3v-1z" fill="currentColor" opacity="0.95"/>
+    </svg>
+  </button>
+
+  <div class="wrap">
+    <div class="search-container">
+      <input id="searchBar" class="search-bar" type="search" placeholder="Search for a game..." aria-label="Search games">
+    </div>
+
+    <main class="grid" id="gameGrid" aria-label="Games">
+      <!-- Example tiles: image now fills the whole tile; text shows as overlay at bottom -->
+      <a href="/gaming/snow.html" class="game-button" data-name="Snow Rider 3D" data-href="/gaming/snow.html">
+        <img src="images/snow.jpeg" alt="Snow Rider 3D">
+        <p>Snow Rider 3D</p>
+      </a>
+
+      <a href="/gaming/poly.html" class="game-button" data-name="Poly Track" data-href="/gaming/poly.html">
+        <img src="/leafy/polytrack-main/images/icon.svg" alt="Poly Track">
+        <p>Poly Track</p>
+      </a>
+
+      <a href="/gaming/pacman.html" class="game-button" data-name="Pac-Man" data-href="/gaming/pacman.html">
+        <img src="images/pacman.png" alt="Pac-Man">
+        <p>Pac-Man</p>
+      </a>
+
+      <a href="/gaming/games.html" class="game-button" data-name="Games" data-href="games.html">
+        <img src="images/games.png" alt="Games">
+        <p>Games</p>
+      </a>
+
+      <a href="/gaming/vex-5.html" class="game-button" data-name="Vex 5" data-href="/gaming/vex-5.html">
+        <img src="images/vex-5.png" alt="Vex 5">
+        <p>Vex 5</p>
+      </a>
+
+      <a href="/gaming/retro.html" class="game-button" data-name="Retro Bowl" data-href="/gaming/retro.html">
+        <img src="images/retro.avif" alt="Retro Bowl">
+        <p>Retro Bowl</p>
+      </a>
+
+      <!-- Add more tiles as needed — keep using the same structure (img + <p> and data-name for search). -->
+    </main>
+
+    <div id="no-results" class="no-results">No results found. Request the game using the button below.</div>
+  </div>
+
+  <a class="request-btn" href="https://forms.gle/EfkriY8Fyp7gLx9D8" target="_blank" rel="noreferrer">Request a game</a>
+
+  <script>
+    (function(){
+      // Utility shuffle
+      function shuffle(a){ const s=a.slice(); for (let i=s.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [s[i],s[j]]=[s[j],s[i]];} return s; }
+
+      // neon palette
+      const palette = [
+        { solid:'hsl(180 90% 56%)', glow:'hsla(180 90% 46% / 0.32)' },
+        { solid:'hsl(290 85% 60%)', glow:'hsla(290 85% 50% / 0.32)' },
+        { solid:'hsl(12 95% 60%)',  glow:'hsla(12 95% 50% / 0.32)' },
+        { solid:'hsl(200 95% 60%)', glow:'hsla(200 95% 50% / 0.32)' },
+        { solid:'hsl(140 85% 45%)', glow:'hsla(140 85% 36% / 0.32)' },
+        { solid:'hsl(330 90% 60%)', glow:'hsla(330 90% 50% / 0.32)' }
+      ];
+
+      const gameButtons = Array.from(document.querySelectorAll('.game-button'));
+      const aboutBtn = document.getElementById('aboutBtn');
+      const searchBar = document.getElementById('searchBar');
+
+      // assign neon colors randomized
+      const colors = shuffle(palette);
+      gameButtons.forEach((el, i) => {
+        const c = colors[i % colors.length];
+        el.style.setProperty('--outline', c.solid);
+        el.style.setProperty('--glow', c.glow);
+        el.style.borderColor = c.solid;
+        el.tabIndex = 0;
+
+        // hover linger small feel
+        el.addEventListener('mouseenter', () => el.classList.add('raised'));
+        el.addEventListener('mouseleave', () => setTimeout(()=> el.classList.remove('raised'), 300));
+
+        // keyboard activation
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            if (el.tagName === 'A') el.click();
+            else if (el.dataset.href) window.location.href = el.dataset.href;
+          }
+        });
+      });
+
+      if (aboutBtn){
+        const c = colors[gameButtons.length % colors.length];
+        aboutBtn.style.setProperty('--outline', c.solid);
+        aboutBtn.style.setProperty('--glow', c.glow);
+        aboutBtn.addEventListener('click', () => {
+          const href = aboutBtn.dataset.href;
+          if (href) window.location.href = href;
+        });
+      }
+
+      // Search/filter - uses data-name on .game-button
+      function filterGames() {
+        const query = (searchBar.value || '').toLowerCase().trim();
+        const noResults = document.getElementById('no-results');
+        let found = false;
+        gameButtons.forEach(btn => {
+          const name = (btn.dataset && (btn.dataset.name || btn.getAttribute('data-name')) || btn.textContent || '').toLowerCase();
+          if (!query || name.includes(query)){
+            btn.classList.remove('hidden');
+            found = true;
+          } else {
+            btn.classList.add('hidden');
+          }
+        });
+        noResults.style.display = found ? 'none' : 'block';
+      }
+      searchBar.addEventListener('input', filterGames);
+
+      // expose neon reshuffle
+      window.__reshuffleNeon = () => {
+        const newCols = shuffle(palette);
+        gameButtons.forEach((el,i)=> {
+          const c = newCols[i % newCols.length];
+          el.style.setProperty('--outline', c.solid);
+          el.style.setProperty('--glow', c.glow);
+          el.style.borderColor = c.solid;
+        });
+      };
+
+      /* ========== Snow Canvas (vertical-only) ==========
+         The snow code is the same vertical-only version we used earlier.
+         Kept inline here for convenience; you can move to a separate JS file if you want.
+      */
+      const CONFIG = {
+        baseRepelRadius: 48,
+        speedMultiplier: 1.08,
+        layerCounts: function(w){
+          if (w>1400) return {far:320, mid:220, front:140};
+          if (w>1000) return {far:240, mid:160, front:110};
+          if (w>700)  return {far:160, mid:110, front:72};
+          return               {far:80,  mid:56,  front:36};
+        }
+      };
+
+      const canvas = document.getElementById('snowCanvas');
+      const ctx = canvas.getContext('2d');
+      let dpr = Math.max(1, window.devicePixelRatio || 1);
+      let width = 0, height = 0;
+      let flakes = [], counts = {far:0, mid:0, front:0};
+      let pointer = { x:-9999, y:-9999, active:false };
+
+      function rand(a,b){ return a + Math.random()*(b-a); }
+
+      function createFlakeForLayer(layer){
+        if (layer === 'far'){
+          const z = rand(0.16,0.36); const baseVy = rand(0.08,0.32)*CONFIG.speedMultiplier;
+          return { layer, z, x:rand(0,width), y:rand(0,height), vx:rand(-0.02,0.02), vy:baseVy, baseVy, size:rand(0.6,1.6)*(1+z), alpha:rand(0.10,0.28) };
+        }
+        if (layer === 'mid'){
+          const z = rand(0.44,0.7); const baseVy = rand(0.22,0.6)*CONFIG.speedMultiplier;
+          return { layer, z, x:rand(0,width), y:rand(0,height), vx:rand(-0.03,0.03), vy:baseVy, baseVy, size:rand(1.3,3.0)*(1+z*0.5), alpha:rand(0.22,0.6) };
+        }
+        const z = rand(0.74,1.05); const baseVy = rand(0.38,1.4)*CONFIG.speedMultiplier;
+        return { layer, z, x:rand(0,width), y:rand(0,height), vx:rand(-0.05,0.05), vy:baseVy, baseVy, size:rand(2.4,6.0)*(1+z*0.35), alpha:rand(0.38,1.0) };
+      }
+
+      function rebuildFlakes(){
+        flakes = [];
+        for (let i=0;i<counts.far;i++) flakes.push(createFlakeForLayer('far'));
+        for (let i=0;i<counts.mid;i++) flakes.push(createFlakeForLayer('mid'));
+        for (let i=0;i<counts.front;i++) flakes.push(createFlakeForLayer('front'));
+      }
+
+      function resize(){
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        counts = CONFIG.layerCounts(width);
+        rebuildFlakes();
+      }
+
+      function clampVx(f){
+        const base = 0.9 * (0.06 + 0.28 * f.z) * CONFIG.speedMultiplier;
+        if (f.vx > base) f.vx = base;
+        if (f.vx < -base) f.vx = -base;
+      }
+
+      let last = performance.now();
+      function loop(now){
+        const dt = Math.min(40, now - last);
+        last = now;
+        ctx.clearRect(0,0,width,height);
+
+        for (let i=0;i<flakes.length;i++){
+          const f = flakes[i];
+          f.vy += 0.00055 * dt * (1 + (f.z - 0.5));
+          f.x += f.vx * dt * 0.05;
+          f.y += f.vy * dt * 0.05;
+
+          if (pointer.active){
+            const dx = f.x - pointer.x, dy = f.y - pointer.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const radius = CONFIG.baseRepelRadius * (1 + (f.size/6)) * (1 + (0.18 * (1 - f.z)));
+            if (dist < radius && dist > 0.1){
+              const nx = dx / dist, ny = dy / dist;
+              const tx = -ny, ty = nx;
+              const strength = (1 - (dist / radius)) * (0.36 + (f.size*0.05)) * (1 + (1 - f.z));
+              f.vx += tx * strength * 0.78;
+              f.vy += Math.abs(ty) * strength * 0.06;
+              f.vx += nx * strength * 0.04;
+              f.vy += Math.abs(ny) * strength * 0.02;
+            }
+          }
+
+          f.vx *= 0.996; f.vy *= 0.999;
+          clampVx(f);
+          const minVy = (f.baseVy || 0.02) * 0.45;
+          if (f.vy < minVy) f.vy = minVy;
+
+          const drawSize = Math.max(0.4, f.size);
+          const grd = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, drawSize * 2.2);
+          grd.addColorStop(0, `rgba(255,255,255,${Math.min(1,f.alpha)})`);
+          grd.addColorStop(0.6, `rgba(255,255,255,${Math.max(0,f.alpha*0.28)})`);
+          grd.addColorStop(1, `rgba(255,255,255,0)`);
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, drawSize * 1.6, 0, Math.PI*2);
+          ctx.fill();
+
+          if (f.y > height + 18){
+            f.alpha -= 0.03;
+            if (f.alpha <= 0.06){
+              const newF = createFlakeForLayer(f.layer);
+              newF.x = rand(0,width); newF.y = rand(-height*0.6, -6);
+              flakes[i] = newF;
+            }
+          }
+
+          if (f.x < -80) f.x = -80;
+          if (f.x > width + 80) f.x = width + 80;
+        }
+
+        requestAnimationFrame(loop);
+      }
+
+      function onPointerMove(e){
+        pointer.active = true;
+        if (e.touches && e.touches.length){ pointer.x = e.touches[0].clientX; pointer.y = e.touches[0].clientY; }
+        else { pointer.x = e.clientX; pointer.y = e.clientY; }
+      }
+      function onPointerLeave(){ pointer.active = false; pointer.x = -9999; pointer.y = -9999; }
+      window.addEventListener('mousemove', onPointerMove, {passive:true});
+      window.addEventListener('touchmove', onPointerMove, {passive:true});
+      window.addEventListener('mouseleave', onPointerLeave);
+      window.addEventListener('touchend', onPointerLeave);
+
+      function init(){
+        dpr = Math.max(1, window.devicePixelRatio || 1);
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+      }
+      init();
+
+      // small helpers
+      window.__rebuildSnow = rebuildFlakes;
+      window.__reshuffleNeon = () => {
+        const newCols = shuffle(palette);
+        gameButtons.forEach((el,i)=> {
+          const c = newCols[i % newCols.length];
+          el.style.setProperty('--outline', c.solid);
+          el.style.setProperty('--glow', c.glow);
+          el.style.borderColor = c.solid;
+        });
+      };
+    })();
+  </script>
+</body>
+</html>

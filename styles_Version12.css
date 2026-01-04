@@ -1,0 +1,181 @@
+:root{
+  --page-bg: #0f1724;
+  --text: #eaf6ff;
+  --search-glow: rgba(120,170,255,0.10);
+  --btn-width: 150px;
+  --btn-height: 200px;
+  --outline: #0ff;
+}
+
+/* Reset + Body */
+html,body{height:100%; margin:0; padding:0;}
+body{
+  background:var(--page-bg);
+  color:var(--text);
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:28px;
+  overflow:hidden;
+}
+
+/* snow canvas */
+#snowCanvas{ position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+/* wrapper */
+.wrap{ position:relative; z-index:1; width:100%; max-width:1200px; }
+
+/* about button */
+.about-btn{
+  --outline: hsl(200 90% 60%);
+  --glow: hsla(200 90% 50% / 0.28);
+  position:fixed;
+  top:16px; left:16px;
+  z-index:110;
+  height:52px; width:52px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:3px solid var(--outline);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.55), 0 0 18px var(--glow);
+  color:var(--text);
+  cursor:pointer;
+}
+
+/* search bar */
+.search-container{ margin:14px 0 18px; display:flex; justify-content:center; }
+.search-bar{
+  width: min(720px, 92%);
+  max-width:720px;
+  padding:12px 16px;
+  border-radius:10px;
+  border:2px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color:var(--text);
+  font-weight:600;
+  outline:none;
+  box-shadow:0 10px 30px rgba(0,0,0,0.55);
+}
+.search-bar::placeholder{ color: rgba(255,255,255,0.28); }
+.search-bar:focus{
+  box-shadow: 0 14px 38px rgba(0,0,0,0.55), 0 0 30px var(--search-glow);
+  border-color: rgba(255,255,255,0.10);
+}
+
+/* Grid */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  justify-content:center;
+  align-items:flex-start;
+  padding-bottom:36px;
+}
+
+/* game-button tile style */
+.game-button{
+  --outline: var(--outline);
+  --glow: rgba(0,255,255,0.18);
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-decoration:none;
+  color:var(--text);
+  width:var(--btn-width);
+  height:var(--btn-height);
+  padding:0;
+  border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  border:2px solid var(--outline);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.55), 0 0 16px var(--glow);
+  font-weight:600;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+  position:relative;
+  overflow:hidden;
+  user-select:none;
+}
+
+/* make image fill the whole tile */
+.game-button img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:inherit;
+  display:block;
+  pointer-events:none;
+  filter: saturate(1.04) contrast(1.02);
+  transform-origin:center;
+  transition: transform .28s ease;
+}
+
+/* title overlay sits above the image so it's readable */
+.game-button p{
+  position:relative;
+  z-index:2;
+  margin:0;
+  padding:8px 10px;
+  width:calc(100% - 18px);
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  text-align:center;
+  margin-top:auto;
+  margin-bottom:10px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55));
+  border-radius:6px;
+  backdrop-filter: blur(2px);
+}
+
+/* hover / raised effect */
+.game-button:hover,
+.game-button.raised {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.65), 0 0 34px var(--glow);
+}
+.game-button img:hover { transform: scale(1.03); }
+
+/* responsive */
+@media (max-width:720px){
+  :root{ --btn-width: 120px; --btn-height: 160px; }
+  .game-button img{ }
+}
+@media (max-width:480px){
+  :root{ --btn-width: calc(33vw); --btn-height: calc(44vw); }
+  .wrap{ padding: 18px; }
+}
+
+/* hidden class for filtering */
+.game-button.hidden{ display:none !important; }
+
+/* no-results message */
+.no-results{
+  display:none;
+  margin-top:20px;
+  color:#ff9b9b;
+  font-weight:600;
+  text-align:center;
+}
+
+/* request button */
+.request-btn{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:110;
+  background: rgba(255,255,255,0.04);
+  color:var(--text);
+  padding:10px 16px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  text-decoration:none;
+  font-weight:700;
+}
+
+/* accessibility focus */
+.game-button:focus{ outline:3px solid rgba(255,255,255,0.06); outline-offset:4px; transform: translateY(-8px); }
